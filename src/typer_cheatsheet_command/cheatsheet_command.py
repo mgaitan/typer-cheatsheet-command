@@ -11,7 +11,7 @@ def register_cheatsheet_command(app: typer.Typer, command_name: str = "cheatshee
     """
     Registers the 'cheatsheet' command to the provided Typer application.
     """
-
+    app_name = app.info.name if app.info and app.info.name else "CLI"
     @app.command(
         name=command_name,
         help="Show the command tree structure of the application."
@@ -22,12 +22,9 @@ def register_cheatsheet_command(app: typer.Typer, command_name: str = "cheatshee
             typer.Option("--show-all", help="Include hidden commands")
         ] = False
     ):
-        """
-        Show the command tree structure for the current Typer application.
-        """
         console = Console()
         # Dynamically get the app's name. Use "Typer Application" as a fallback.
-        app_name = app.info.name if app.info and app.info.name else "Typer Application"
+
         tree = Tree(f"[bold]{app_name}[/bold]", guide_style="bright_green")
 
         def add_subcommands(typer_app: typer.Typer, tree_node: Tree):
@@ -57,3 +54,4 @@ def register_cheatsheet_command(app: typer.Typer, command_name: str = "cheatshee
 
         add_subcommands(app, tree) # Start recursion with the main app
         console.print(Panel(tree, title="Cheatsheet", title_align="left"))
+    cheatsheet.__doc__ = f"Show the command tree structure for {app_name}"
