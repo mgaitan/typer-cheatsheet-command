@@ -12,33 +12,23 @@ You can install this command directly from GitHub using `uv`
 uv add git+https://github.com/mgaitan/typer-cheatsheet-command.git
 ```
 
-### As a standalone application (Demo)
+### Demo
 
 You can run the demo application included in this repository to see the `cheatsheet` command in action:
 
 ```bash
-uv run --from=git+https://github.com/mgaitan/typer-cheatsheet-command.git -m typer_cheatsheet_command -- cheatsheet
+uv run --with=git+https://github.com/mgaitan/typer-cheatsheet-command.git -m typer_cheatsheet_command -- cheatsheet
 ```
 
 This will output a tree structure of the demo (dummy) application's commands:
 
-```
-╭─ Cheatsheet ───────────────────────────────────────────────────────────────╮
-│ typer-cheatsheet-demo                                                      │
-│ ├── generate-report: Generates a monthly report.                           │
-│ ├── configure: Configure application settings.                             │
-│ ├── cheatsheet: Show the command tree structure for typer-cheatsheet-demo  │
-│ └── users                                                                  │
-│     ├── add: Adds a new user.                                              │
-│     └── delete: Deletes an existing user.                                  │
-╰────────────────────────────────────────────────────────────────────────────╯
-```
+![Typer Cheatsheet Command Tree](./cli_2025-10-30.svg)
 
-You can also include hidden commands with the `--show-all` option:
+<!--
+using rich capture
+rich-capture "uv run -q --with=git+https://github.com/mgaitan/typer-cheatsheet-command.git -m typer_cheatsheet_command -- cheatsheet" --hide-command
+-->
 
-```bash
-uv run --from=git+https://github.com/mgaitan/typer-cheatsheet-command.git -m typer_cheatsheet_command -- cheatsheet --show-all
-```
 
 ### Integrating into your Typer application
 
