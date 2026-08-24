@@ -91,6 +91,18 @@ By default, the command is registered as `cheatsheet`. If you want to use a diff
 register_cheatsheet_command(app, command_name="cheat")
 ```
 
+The command description is configurable and may contain multiple lines:
+
+```python
+register_cheatsheet_command(
+    app,
+    description="""Show every available command.
+
+    Includes nested groups and their parameters.
+    """,
+)
+```
+
 ### JSON output
 
 Use JSON when another program needs to discover commands, options, arguments, and nested groups:

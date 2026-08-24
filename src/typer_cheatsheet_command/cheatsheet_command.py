@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from inspect import cleandoc
 from dataclasses import asdict, dataclass, field
 from typing import Annotated, Any, Literal
 
@@ -81,7 +82,7 @@ def _command_info(
 
     return CommandInfo(
         name=name,
-        help=command.get_short_help_str(),
+        help=cleandoc(command.help or ""),
         hidden=command.hidden,
         parameters=[_parameter_info(parameter) for parameter in command.params],
         commands=children,
@@ -107,13 +108,13 @@ def _rich_tree(command: CommandInfo, *, root: bool = False) -> Tree:
 
 
 def register_cheatsheet_command(
-    app: typer.Typer, command_name: str = "cheatsheet"
+    app: typer.Typer,
+    command_name: str = "cheatsheet",
+    description: str = "Show the command tree structure of the application.",
 ) -> None:
     """Register a command that displays the application's command tree."""
 
-    @app.command(
-        name=command_name, help="Show the command tree structure of the application."
-    )
+    @app.command(name=command_name, help=cleandoc(description))
     def cheatsheet(
         show_all: Annotated[
             bool, typer.Option("--show-all", help="Include hidden commands.")

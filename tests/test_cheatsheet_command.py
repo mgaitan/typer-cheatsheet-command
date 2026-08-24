@@ -91,3 +91,53 @@ def test_custom_command_name():
     result = CliRunner().invoke(app, ["commands"])
 
     assert result.exit_code == 0
+
+
+def test_command_description_can_be_overridden_with_multiline_text():
+    app = typer.Typer(name="example")
+
+    @app.command()
+    def hello():
+        """Say hello."""
+
+    register_cheatsheet_command(
+        app,
+        description="""Show every available command.
+
+        Includes nested groups and their parameters.
+        """,
+    )
+
+    command = {command.name: command for command in get_command_tree(app).commands}[
+        "cheatsheet"
+    ]
+    result = CliRunner().invoke(app, ["cheatsheet"])
+
+    assert command.help == (
+        "Show every available command.\n\nIncludes nested groups and their parameters."
+    )
+    assert "Show every available command." in result.stdout
+    assert "Includes nested groups and their parameters." in result.stdout
+
+
+def test_command_tree_keeps_full_multiline_help():
+    app = typer.Typer(name="example")
+
+    @app.command()
+    def describe():
+        """First line of the description.
+
+        A second paragraph that must not be truncated by the command tree.
+        """
+
+    @app.command()
+    def hello():
+        """Say hello."""
+
+    tree = get_command_tree(app)
+    command = {command.name: command for command in tree.commands}["describe"]
+
+    assert command.help == (
+        "First line of the description.\n\n"
+        "A second paragraph that must not be truncated by the command tree."
+    )
