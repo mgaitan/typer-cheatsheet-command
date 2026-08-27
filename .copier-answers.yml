@@ -1,0 +1,14 @@
+# Changes here will be overwritten by Copier.
+_commit: 8c336f2
+_src_path: gh:mgaitan/python-package-copier-template
+author_email: gaitan@gmail.com
+author_fullname: Martín Gaitán
+author_username: mgaitan
+copyright_license: MIT
+gh_repo_create: skip
+project_description: A pluggable cheatsheet command for Typer applications.
+project_name: Typer Cheatsheet Command
+python_package_command_line_name: typer-cheatsheet-command
+python_package_distribution_name: typer-cheatsheet-command
+python_package_import_name: typer_cheatsheet_command
+repository_name: typer-cheatsheet-command

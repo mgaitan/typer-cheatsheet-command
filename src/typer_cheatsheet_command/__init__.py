@@ -1,3 +1,5 @@
+"""A command-tree cheatsheet command for Typer applications."""
+
 from .cheatsheet_command import (
     CommandInfo,
     ParameterInfo,

@@ -1,21 +1,25 @@
+"""Inspect Typer applications and render their command trees."""
+
 from __future__ import annotations
 
 import json
-from inspect import cleandoc
 from dataclasses import asdict, dataclass, field
-from typing import Annotated, Any, Literal
+from inspect import cleandoc
+from typing import Annotated, Any, Literal, cast
 
 import typer
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 from rich.tree import Tree
-from typer.core import TyperGroup, TyperOption
+from typer.core import TyperArgument, TyperCommand, TyperGroup, TyperOption
 from typer.main import get_command
 
 
 @dataclass(frozen=True)
 class ParameterInfo:
+    """Describe one command argument or option."""
+
     name: str
     kind: Literal["argument", "option"]
     required: bool
@@ -28,14 +32,16 @@ class ParameterInfo:
 
 @dataclass(frozen=True)
 class CommandInfo:
+    """Describe a command and its nested subcommands."""
+
     name: str
     help: str
     hidden: bool
     parameters: list[ParameterInfo] = field(default_factory=list)
-    commands: list["CommandInfo"] = field(default_factory=list)
+    commands: list[CommandInfo] = field(default_factory=list)
 
 
-def _json_default(value: Any) -> Any:
+def _json_default(value: object) -> object:
     try:
         json.dumps(value)
     except TypeError:
@@ -43,7 +49,7 @@ def _json_default(value: Any) -> Any:
     return value
 
 
-def _parameter_info(parameter) -> ParameterInfo:
+def _parameter_info(parameter: TyperOption | TyperArgument) -> ParameterInfo:
     is_option = isinstance(parameter, TyperOption)
     return ParameterInfo(
         name=parameter.name or "",
@@ -58,7 +64,7 @@ def _parameter_info(parameter) -> ParameterInfo:
 
 
 def _command_info(
-    command,
+    command: TyperCommand | TyperGroup,
     *,
     name: str,
     parent_context: typer.Context | None,
@@ -73,7 +79,7 @@ def _command_info(
                 continue
             children.append(
                 _command_info(
-                    child,
+                    cast("TyperCommand | TyperGroup", child),
                     name=child_name,
                     parent_context=context,
                     show_all=show_all,
@@ -84,14 +90,14 @@ def _command_info(
         name=name,
         help=cleandoc(command.help or ""),
         hidden=command.hidden,
-        parameters=[_parameter_info(parameter) for parameter in command.params],
+        parameters=[_parameter_info(cast("TyperOption | TyperArgument", parameter)) for parameter in command.params],
         commands=children,
     )
 
 
 def get_command_tree(app: typer.Typer, *, show_all: bool = False) -> CommandInfo:
     """Return the Typer application's command tree as serializable data."""
-    command = get_command(app)
+    command = cast("TyperCommand | TyperGroup", get_command(app))
     name = app.info.name or command.name or "cli"
     return _command_info(command, name=name, parent_context=None, show_all=show_all)
 
@@ -116,9 +122,7 @@ def register_cheatsheet_command(
 
     @app.command(name=command_name, help=cleandoc(description))
     def cheatsheet(
-        show_all: Annotated[
-            bool, typer.Option("--show-all", help="Include hidden commands.")
-        ] = False,
+        show_all: Annotated[bool, typer.Option("--show-all", help="Include hidden commands.")] = False,
         output: Annotated[
             Literal["tree", "json"],
             typer.Option("--output", "-o", help="Output format."),

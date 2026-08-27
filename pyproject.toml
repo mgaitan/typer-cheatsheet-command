@@ -1,31 +1,102 @@
 [project]
 name = "typer-cheatsheet-command"
-version = "0.1.0"
 description = "A pluggable cheatsheet command for Typer applications."
-readme = "README.md"
+authors = [{ name = "Martín Gaitán", email = "gaitan@gmail.com" }]
 license = "MIT"
-authors = [
-    { name = "Martín Gaitán", email = "gaitan@gmail.com" }
-]
+license-files = ["LICENSE"]
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["typer", "cli", "command-line", "cheatsheet"]
+version = "0.2.0"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Topic :: Documentation",
+    "Topic :: Software Development",
+    "Topic :: Utilities",
+    "Typing :: Typed",
 ]
-requires-python = ">=3.10"
 dependencies = [
-    "typer>=0.27.1,<0.28",
-    "rich>=13.0.0"
+    "typer>=0.27.1",
+    "rich>=13.8.0",
 ]
-
-[dependency-groups]
-dev = ["pytest>=8", "ruff"]
 
 [build-system]
-requires = ["uv_build>=0.9.5,<0.13.0"]
+requires = ["uv_build>=0.11.29,<0.12.0"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "typer_cheatsheet_command"
+
+[tool.uv]
+exclude-newer = "1 week"
+exclude-newer-package = { ty = "0 days" }
+
+[tool.ty.src]
+exclude = [".worktrees/", ".external-worktrees/"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F", "I", "C90", "A", "ANN", "UP", "RUF", "T10",
+    "ISC", "SIM", "ASYNC", "ERA", "TRY", "YTT", "BLE", "B", "EXE",
+    "FA", "C4", "DTZ", "FBT", "INT", "LOG", "S", "G", "FLY", "N",
+    "PIE", "PYI", "PT", "TC", "PTH", "PERF", "D", "PGH", "PL", "FURB",
+    "RET", "TID252",
+]
+ignore = ["D203", "D213"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ANN", "D", "FBT001", "FBT002", "S101"]
+"src/typer_cheatsheet_command/cheatsheet_command.py" = ["FBT001", "FBT002"]
+"src/typer_cheatsheet_command/__main__.py" = ["FBT001", "FBT002"]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--cov=typer_cheatsheet_command",
+    "--cov-report=term-missing",
+    "--cov-fail-under=90",
+    "--strict-markers",
+    "--strict-config",
+    "-ra",
+]
+
+[project.scripts]
+typer-cheatsheet-command = "typer_cheatsheet_command.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/mgaitan/typer-cheatsheet-command"
+Documentation = "https://github.com/mgaitan/typer-cheatsheet-command#readme"
+Changelog = "https://github.com/mgaitan/typer-cheatsheet-command/releases"
+Repository = "https://github.com/mgaitan/typer-cheatsheet-command"
+Issues = "https://github.com/mgaitan/typer-cheatsheet-command/issues"
+Funding = "https://github.com/sponsors/mgaitan"
+
+[dependency-groups]
+test = [
+    "pytest>=9.1.1",
+    "pytest-freezer>=0.4.9",
+    "pytest-mock>=3.15.1",
+    "pytest-cov>=7.1.0",
+]
+lint = ["ruff>=0.15.22"]
+qa = [
+    { include-group = "lint" },
+    "ty>=0.0.61",
+]
+dev = [
+    { include-group = "test" },
+    { include-group = "qa" },
+    "ipdb>=0.13.13",
+    "ipython>=9.15.0; python_version >= '3.11'",
+]
