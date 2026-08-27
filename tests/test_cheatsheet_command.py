@@ -4,6 +4,8 @@ import typer
 from typer.testing import CliRunner
 
 from typer_cheatsheet_command import get_command_tree, register_cheatsheet_command
+from typer_cheatsheet_command.__main__ import app as demo_app
+from typer_cheatsheet_command.cheatsheet_command import _json_default
 
 
 def make_app():
@@ -45,9 +47,7 @@ def test_hidden_commands_are_opt_in():
     app = make_app()
 
     assert "secret" not in [command.name for command in get_command_tree(app).commands]
-    assert "secret" in [
-        command.name for command in get_command_tree(app, show_all=True).commands
-    ]
+    assert "secret" in [command.name for command in get_command_tree(app, show_all=True).commands]
 
 
 def test_cheatsheet_renders_tree():
@@ -108,14 +108,10 @@ def test_command_description_can_be_overridden_with_multiline_text():
         """,
     )
 
-    command = {command.name: command for command in get_command_tree(app).commands}[
-        "cheatsheet"
-    ]
+    command = {command.name: command for command in get_command_tree(app).commands}["cheatsheet"]
     result = CliRunner().invoke(app, ["cheatsheet"])
 
-    assert command.help == (
-        "Show every available command.\n\nIncludes nested groups and their parameters."
-    )
+    assert command.help == ("Show every available command.\n\nIncludes nested groups and their parameters.")
     assert "Show every available command." in result.stdout
     assert "Includes nested groups and their parameters." in result.stdout
 
@@ -138,6 +134,18 @@ def test_command_tree_keeps_full_multiline_help():
     command = {command.name: command for command in tree.commands}["describe"]
 
     assert command.help == (
-        "First line of the description.\n\n"
-        "A second paragraph that must not be truncated by the command tree."
+        "First line of the description.\n\nA second paragraph that must not be truncated by the command tree."
     )
+
+
+def test_json_default_repr_fallback():
+    value = object()
+
+    assert _json_default(value) == repr(value)
+
+
+def test_demo_app_exposes_the_canonical_cheatsheet_command():
+    result = CliRunner().invoke(demo_app, ["cheatsheet"])
+
+    assert result.exit_code == 0
+    assert "typer-cheatsheet-demo" in result.stdout
