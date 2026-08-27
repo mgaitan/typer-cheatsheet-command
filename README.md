@@ -24,7 +24,7 @@ uvx typer-cheatsheet-command cheatsheet
 
 This will output a tree structure of the demo (dummy) application's commands:
 
-![Typer Cheatsheet Command Tree](./cli_2025-10-30.svg)
+![Typer Cheatsheet Command Tree](https://raw.githubusercontent.com/mgaitan/typer-cheatsheet-command/main/cli_2025-10-30.svg)
 
 <!--
 using rich capture
